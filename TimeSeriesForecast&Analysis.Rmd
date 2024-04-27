@@ -1,0 +1,234 @@
+---
+title: "Discussion4"
+author: "Swati Srivastava"
+date: "2024-04-21"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(readxl)
+library(tseries)
+library(stats) 
+library(forecast)
+
+```
+
+4. Investigate whether personal income in other states follows a similar process to that in Exercise 3.
+
+```{r}
+file_path <- "ch7_q3_q4_final.xls"
+data1 <- read_excel(file_path, sheet = "cleaned") 
+data1$observation_date <- as.Date(data1$observation_date)
+data <- subset(data1, observation_date >= as.Date("1969-01-01") & observation_date <= as.Date("2002-01-01"))
+```
+
+
+
+```{r}
+#Create time series and plot growth rates
+ts_CA <- ts(data$CALIFORNIA, start = 1969,end= 2002, frequency = 1)
+ts_NY <- ts(data$NEWYORK, start = 1969,end= 2002, frequency = 1)
+ts_SEA <- ts(data$SEATTLE, start = 1969,end= 2002, frequency = 1)
+ts_TX <- ts(data$TEXAS, start = 1969,end= 2002, frequency = 1)
+grTX <- diff(log(ts_TX)) * 100  
+grCA <- diff(log(ts_CA)) * 100 
+grNY <- diff(log(ts_NY)) * 100 
+grSEA <- diff(log(ts_SEA)) * 100  
+plot(grNY, type = "l", xlab = "Time", ylab = "per capita income growth", main = "per capita income growth rate-NY")
+plot(grSEA, type = "l", xlab = "Time", ylab = "per capita income growth", main = "per capita income growth rate-SEA")
+plot(grTX, type = "l", xlab = "Time", ylab = "per capita income growth", main = "per capita income growth rate-TX")
+plot(grCA, type = "l", xlab = "Time", ylab = "per capita income growth", main = "per capita income growth rate %-CA")
+
+```
+
+NewYork
+```{r}
+acf_result <- acf(data$'NEWYORK', plot = FALSE)
+
+# Print the autocorrelation coefficients
+print(acf_result)
+# Plot the autocorrelation function
+plot(acf_result, main = "Autocorrelation Function of NY Income Growth")
+# Calculate partial autocorrelation function
+pacf_result <- pacf(data$'NEWYORK', plot = FALSE)
+
+# Print the partial autocorrelation coefficients
+print(pacf_result)
+# Plot the partial autocorrelation function
+plot(pacf_result, main = "Partial Autocorrelation Function of NY Income Growth")
+```
+
+
+```{r}
+#ARIMA model
+stat_ny <- diff(ts_NY)
+ar_ny <- arima(stat_ny, order = c(1, 0, 0))
+
+ar_ny
+forecast1step <- forecast(ar_ny, h=1)
+
+print(forecast1step)
+plot(forecast1step, main = "1-step Forecasts of NY Income Growth (1969-2002)")
+accuracy_ny <- accuracy(forecast1step)
+forecast_errors_ny <- accuracy_ny
+confidence_interval_ny <- cbind(forecast1step$lower[, "95%"], forecast1step$upper[, "95%"])
+print(forecast_errors_ny)
+print(confidence_interval_ny)
+```
+
+
+```{r}
+forecast2step <- forecast(ar_ny, h=2)
+
+print(forecast2step)
+
+plot(forecast2step, main = "2-step Forecasts of NY Income Growth (1969-2002)")
+
+accuracy_ny <- accuracy(forecast2step)
+forecast_errors_ny <-accuracy_ny
+confidence_interval_ny <- cbind(forecast2step$lower[, "95%"], forecast2step$upper[, "95%"])
+
+
+print(forecast_errors_ny)
+print(confidence_interval_ny)
+
+forecast3step <- forecast(ar_ny, h=3)
+
+
+print(forecast3step)
+
+plot(forecast3step, main = "3-step Forecasts of NY Income Growth (1969-2002)")
+
+accuracy_ny <- accuracy(forecast3step)
+forecast_errors_ny <-accuracy_ny
+confidence_interval_ny <- cbind(forecast3step$lower[, "95%"], forecast3step$upper[, "95%"])
+
+print(forecast_errors_ny)
+print(confidence_interval_ny)
+```
+
+Texas
+```{r}
+acf_result <- acf(data$'TEXAS', plot = FALSE)
+
+# Print the autocorrelation coefficients
+print(acf_result)
+# Plot the autocorrelation function
+plot(acf_result, main = "Autocorrelation Function of TX Income Growth")
+# Calculate partial autocorrelation function
+pacf_result <- pacf(data$'TEXAS', plot = FALSE)
+
+# Print the partial autocorrelation coefficients
+print(pacf_result)
+# Plot the partial autocorrelation function
+plot(pacf_result, main = "Partial Autocorrelation Function of TX Income Growth")
+```
+```{r}
+#ARIMA model
+stat_tx <- diff(ts_NY)
+ar_tx <- arima(stat_tx, order = c(1, 0, 0))
+
+ar_tx
+forecast1step <- forecast(ar_tx, h=1)
+
+print(forecast1step)
+plot(forecast1step, main = "1-step Forecasts of TX Income Growth (1969-2002)")
+accuracy_tx <- accuracy(forecast1step)
+forecast_errors_tx <- accuracy_tx
+confidence_interval_tx <- cbind(forecast1step$lower[, "95%"], forecast1step$upper[, "95%"])
+print(forecast_errors_tx)
+print(confidence_interval_tx)
+```
+
+```{r}
+forecast2step <- forecast(ar_tx, h=2)
+
+print(forecast2step)
+
+plot(forecast2step, main = "2-step Forecasts of TX Income Growth (1969-2002)")
+
+accuracy_tx <- accuracy(forecast2step)
+forecast_errors_tx <-accuracy_tx
+confidence_interval_tx <- cbind(forecast2step$lower[, "95%"], forecast2step$upper[, "95%"])
+
+
+print(forecast_errors_tx)
+print(confidence_interval_tx)
+
+forecast3step <- forecast(ar_tx, h=3)
+
+
+print(forecast3step)
+
+plot(forecast3step, main = "3-step Forecasts of TX Income Growth (1969-2002)")
+
+accuracy_tx <- accuracy(forecast3step)
+forecast_errors_tx <-accuracy_tx
+confidence_interval_tx <- cbind(forecast3step$lower[, "95%"], forecast3step$upper[, "95%"])
+
+print(forecast_errors_tx)
+print(confidence_interval_tx)
+```
+Seattle
+```{r}
+acf_result <- acf(data$'SEATTLE', plot = FALSE)
+
+print(acf_result)
+
+plot(acf_result, main = "Autocorrelation Function of Seattle Income Growth")
+
+pacf_result <- pacf(data$'SEATTLE', plot = FALSE)
+
+
+print(pacf_result)
+
+plot(pacf_result, main = "Partial Autocorrelation Function of Seattle Income Growth")
+```
+
+```{r}
+#ARIMA model
+stat_se <- diff(ts_SEA)
+ar_se <- arima(stat_se, order = c(1, 0, 0))
+
+ar_se
+forecast1step <- forecast(ar_se, h=1)
+
+print(forecast1step)
+plot(forecast1step, main = "1-step Forecasts of Seattle Income Growth (1969-2002)")
+accuracy_se <- accuracy(forecast1step)
+forecast_errors_se <- accuracy_se
+confidence_interval_se <- cbind(forecast1step$lower[, "95%"], forecast1step$upper[, "95%"])
+print(forecast_errors_se)
+print(confidence_interval_se)
+```
+
+```{r}
+forecast2step <- forecast(ar_se, h=2)
+
+print(forecast2step)
+
+plot(forecast2step, main = "2-step Forecasts of Seattle Income Growth (1969-2002)")
+
+accuracy_se <- accuracy(forecast2step)
+forecast_errors_se <-accuracy_se
+confidence_interval_se <- cbind(forecast2step$lower[, "95%"], forecast2step$upper[, "95%"])
+
+
+print(forecast_errors_se)
+print(confidence_interval_se)
+
+forecast3step <- forecast(ar_se, h=3)
+
+
+print(forecast3step)
+
+plot(forecast3step, main = "3-step Forecasts of Seattle Income Growth (1969-2002)")
+
+accuracy_se <- accuracy(forecast3step)
+forecast_errors_se <-accuracy_se
+confidence_interval_se <- cbind(forecast3step$lower[, "95%"], forecast3step$upper[, "95%"])
+
+print(forecast_errors_se)
+print(confidence_interval_se)
+```
+
